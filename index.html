@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Shadi Gaming Time Calculator</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Shadi Gaming">
+    
+    <!-- Icons for home screen -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDE4MCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxODAiIGhlaWdodD0iMTgwIiByeD0iNDAiIGZpbGw9IiM2MzY2RjEiLz4KPHN2ZyB4PSI0MCIgeT0iNDAiIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9IndoaXRlIj4KPHA+dGg+TWFyaz0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Im05IDEyIDIgMiA0LTQiLz48cGF0aCBkPSJNMjEgMTJjMCA0Ljk3LTQgOS05IDlzLTktNC4wMy05LTlTNyAzIDEyIDNzOSA0LjAzIDkgOXoiLz48L3N2Zz4KPC9zdmc+">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 15px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 420px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .gaming-time-display {
+            font-size: 16px;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.2);
+            height: 6px;
+            border-radius: 3px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .date-display {
+            text-align: center;
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .checklist-item {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .checklist-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .checklist-item.completed {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #ecfdf5, #f0fdf4);
+        }
+
+        .checklist-item.not-required {
+            background: #f8f9fa;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .item-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .item-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1f2937;
+            line-height: 1.3;
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .checkbox {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #d1d5db;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            background: white;
+            flex-shrink: 0;
+        }
+
+        .completed .checkbox {
+            background: #10b981;
+            border-color: #10b981;
+        }
+
+        .checkbox::after {
+            content: '✓';
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .completed .checkbox::after {
+            opacity: 1;
+        }
+
+        .item-status {
+            color: #6b7280;
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        .not-required .item-status {
+            color: #9ca3af;
+        }
+
+        .gaming-reward {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+            text-align: center;
+            padding: 18px;
+            margin-top: 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .gaming-reward.unlocked {
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        .gaming-reward.pending-approval {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .parent-section {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .parent-header {
+            font-size: 14px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .parent-controls {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .parent-button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .approve-btn {
+            background: #10b981;
+            color: white;
+        }
+
+        .approve-btn:hover {
+            background: #059669;
+        }
+
+        .deny-btn {
+            background: #ef4444;
+            color: white;
+        }
+
+        .deny-btn:hover {
+            background: #dc2626;
+        }
+
+        .bedtime-note {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #92400e;
+            text-align: center;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .tournament-option {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tournament-option:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .tournament-option.used {
+            background: #6b7280;
+            cursor: not-allowed;
+        }
+
+        .reset-button {
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+            transition: background-color 0.2s ease;
+        }
+
+        .reset-button:hover {
+            background: #dc2626;
+        }
+
+        .install-prompt {
+            background: #3b82f6;
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-size: 13px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .install-prompt.show {
+            display: block;
+        }
+
+        .weekend-badge {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        /* Login Screen Styles */
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 350px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .login-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 30px;
+        }
+
+        .user-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .user-button {
+            padding: 15px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .shadi-btn {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+
+        .shadi-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .parent-btn {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .parent-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(245, 158, 11, 0.3);
+        }
+
+        .code-input-section {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .code-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 18px;
+            text-align: center;
+            font-weight: 600;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .code-input:focus {
+            outline: none;
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .login-btn:hover {
+            background: #059669;
+        }
+
+        .back-btn {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* Parent Mode Styles */
+        .parent-mode-indicator {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 8px 15px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .parent-controls-section {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .parent-controls-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .parent-action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .parent-action-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .check-all-btn {
+            background: #10b981;
+            color: white;
+        }
+
+        .uncheck-all-btn {
+            background: #ef4444;
+            color: white;
+        }
+
+        .edit-tasks-btn {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .logout-btn {
+            background: #6b7280;
+            color: white;
+        }
+
+        /* Task Editor Modal */
+        .task-editor-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .task-editor-content {
+            background: white;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .task-editor-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .task-edit-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .task-edit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .task-edit-title {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .task-title-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .week-schedule {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin-top: 10px;
+        }
+
+        .day-toggle {
+            padding: 6px 4px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            background: #f9fafb;
+            cursor: pointer;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .day-toggle.active {
+            background: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+
+        .day-labels {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin-bottom: 5px;
+            font-size: 10px;
+            font-weight: 600;
+            color: #6b7280;
+            text-align: center;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .save-btn {
+            background: #10b981;
+            color: white;
+        }
+
+        .cancel-btn {
+            background: #6b7280;
+            color: white;
+        }
+
+        .parent-mode .checklist-item {
+            border: 2px solid #f59e0b;
+        }
+
+        .parent-mode .checklist-item.completed {
+            border-color: #10b981;
+        }
+
+        .parent-only-task {
+            background: linear-gradient(135deg, #fef3c7, #fbbf24);
+            border: 2px solid #f59e0b !important;
+        }
+
+        .parent-only-task.completed {
+            background: linear-gradient(135deg, #dcfce7, #10b981);
+            border-color: #10b981 !important;
+        }
+
+        .parent-only-indicator {
+            background: #f59e0b;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .compliance-note {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 6px;
+            padding: 8px;
+            margin-top: 6px;
+            font-size: 11px;
+            color: #92400e;
+            text-align: center;
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 10px; }
+            .header { padding: 20px 15px; }
+            .content { padding: 15px; }
+            .item-title { font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-container">
+            <div class="login-title">🎮 Shadi Gaming App</div>
+            
+            <div class="user-options" id="userOptions">
+                <button class="user-button shadi-btn" onclick="selectUser('shadi')">
+                    👦 Shadi's View
+                </button>
+                <button class="user-button parent-btn" onclick="selectUser('parent')">
+                    👨‍👩‍👧 Parent View
+                </button>
+            </div>
+
+            <div class="code-input-section" id="codeInputSection">
+                <input type="password" class="code-input" id="parentCode" placeholder="Enter Parent Code" maxlength="6">
+                <button class="login-btn" onclick="verifyParentCode()">Enter Parent Mode</button>
+                <div class="error-message" id="errorMessage">Incorrect code. Please try again.</div>
+                <button class="back-btn" onclick="backToUserSelection()">← Back</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div class="container" id="mainApp" style="display: none;">
+        <!-- Parent Mode Indicator -->
+        <div class="parent-mode-indicator" id="parentModeIndicator" style="display: none;">
+            🔐 PARENT MODE ACTIVE - You can modify all tasks and approvals
+        </div>
+
+        <div class="install-prompt" id="installPrompt">
+            📱 Add to Home Screen: Tap the Share button and select "Add to Home Screen" to install this app!
+        </div>
+        
+        <div class="header">
+            <h1>⚽ Shadi Gaming Time Calculator</h1>
+            <div class="gaming-time-display" id="gamingTimeDisplay">
+                Complete today's tasks to earn gaming time!
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="date-display" id="dateDisplay"></div>
+            
+            <!-- Parent Controls Section (only visible in parent mode) -->
+            <div class="parent-controls-section" id="parentControlsSection" style="display: none;">
+                <div class="parent-controls-title">🔧 Parent Controls</div>
+                <div class="parent-action-buttons">
+                    <button class="parent-action-btn check-all-btn" onclick="checkAllTasks()">✓ Check All</button>
+                    <button class="parent-action-btn uncheck-all-btn" onclick="uncheckAllTasks()">✗ Uncheck All</button>
+                    <button class="parent-action-btn edit-tasks-btn" onclick="openTaskEditor()">📝 Edit Tasks</button>
+                    <button class="parent-action-btn logout-btn" onclick="logout()">🚪 Logout</button>
+                </div>
+            </div>
+            
+            <div id="checklistContainer">
+                <!-- Checklist items will be generated here -->
+            </div>
+
+            <div class="gaming-reward" id="gamingReward">
+                🔒 Complete all required tasks to unlock gaming time!
+            </div>
+
+            <div class="parent-section" id="parentSection" style="display: none;">
+                <div class="parent-header">🔐 Parent Verification Required</div>
+                <div class="parent-controls">
+                    <button class="parent-button approve-btn" onclick="parentApproval(true)">✓ Approve Gaming</button>
+                    <button class="parent-button deny-btn" onclick="parentApproval(false)">✗ Deny Gaming</button>
+                </div>
+                <div style="margin-top: 8px; font-size: 12px; color: #6b7280; text-align: center;">
+                    Parents: Review Shadi's completed tasks before approving
+                </div>
+            </div>
+
+            <div class="tournament-option" id="tournamentOption" onclick="useTournament()">
+                🏆 Use Weekly Tournament Option (3 hours)
+            </div>
+
+            <button class="reset-button" onclick="resetDaily()">
+                Reset Today's Progress
+            </button>
+        </div>
+    </div>
+
+    <!-- Task Editor Modal -->
+    <div class="task-editor-modal" id="taskEditorModal">
+        <div class="task-editor-content">
+            <div class="task-editor-title">📝 Edit Tasks & Schedule</div>
+            <div id="taskEditContainer">
+                <!-- Task edit items will be generated here -->
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn save-btn" onclick="saveTaskEdits()">💾 Save Changes</button>
+                <button class="modal-btn cancel-btn" onclick="closeTaskEditor()">❌ Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Shadi's task schedule from the spreadsheet
+        const weeklySchedule = {
+            // Task definitions with requirements for each day (0=Sunday, 1=Monday, etc.)
+            tasks: [
+                {
+                    id: 'football',
+                    title: 'Football at Barcelona FC or another Club',
+                    required: [false, true, false, true, true, false, false, true] // Sun, Mon, Tue, Wed, Thu, Fri, Sat
+                },
+                {
+                    id: 'gym',
+                    title: 'Gym with Dad',
+                    required: [false, false, false, false, false, false, true, false]
+                },
+                {
+                    id: 'healthy_meals',
+                    title: 'Healthy breakfast and lunch (No cereal/junk, home cooked, eggs, fruits, sandwiches)',
+                    required: [true, true, true, true, true, true, true, true] // Every day
+                },
+                {
+                    id: 'study',
+                    title: 'One Hour of Studying or Reading',
+                    required: [true, true, true, true, true, false, false, true]
+                },
+                {
+                    id: 'family_chat',
+                    title: 'Daily 20 min chat on socials with Mom or Dad',
+                    required: [true, true, true, true, true, false, false, true]
+                },
+                {
+                    id: 'bedtime',
+                    title: 'Phone and iPad with Mom at 10:30pm, in bed by that time',
+                    required: [true, true, true, true, true, false, false, true]
+                },
+                {
+                    id: 'gaming_compliance',
+                    title: 'Gaming Time Compliance - Did not exceed time limit yesterday',
+                    required: [true, true, true, true, true, true, true, false], // Required every day except Sunday
+                    parentOnly: true // Special flag for parent-only tasks
+                }
+            ],
+            // Gaming time rewards for each day when all tasks completed
+            gamingTime: [3, 1, 1, 1, 1, 5, 5, 0] // Hours for Sun, Mon, Tue, Wed, Thu, Fri, Sat (Sunday starts at 0)
+        };
+
+        let completedTasks = new Set();
+        let tournamentUsed = false;
+        let parentApproved = false;
+        let isParentMode = false;
+        const PARENT_CODE = '123456';
+        let editedSchedule = null; // For storing temporary edits
+
+        // Check if bedtime task was completed the previous evening
+        function wasBedtimeCompletedYesterday() {
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayString = yesterday.toDateString();
+            
+            const savedData = JSON.parse(localStorage.getItem('shadiGamingData') || '{}');
+            
+            // First check if there's data for yesterday
+            if (savedData.date === yesterdayString) {
+                return savedData.completed && savedData.completed.includes('bedtime');
+            }
+            
+            // If no yesterday data, check if bedtime was marked for "yesterday" in today's data
+            const today = new Date().toDateString();
+            if (savedData.date === today) {
+                return savedData.completed && savedData.completed.includes('bedtime_yesterday');
+            }
+            
+            return false;
+        }
+
+        // Set bedtime completion for yesterday
+        function setBedtimeYesterday(completed) {
+            if (completed) {
+                completedTasks.add('bedtime_yesterday');
+            } else {
+                completedTasks.delete('bedtime_yesterday');
+            }
+            saveProgress();
+        }
+
+        // Initialize the app
+        function init() {
+            showLoginScreen();
+        }
+
+        // Show login screen
+        function showLoginScreen() {
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('mainApp').style.display = 'none';
+            document.getElementById('userOptions').style.display = 'block';
+            document.getElementById('codeInputSection').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('parentCode').value = '';
+        }
+
+        // Select user type
+        function selectUser(userType) {
+            if (userType === 'shadi') {
+                isParentMode = false;
+                startApp();
+            } else if (userType === 'parent') {
+                document.getElementById('userOptions').style.display = 'none';
+                document.getElementById('codeInputSection').style.display = 'block';
+                document.getElementById('parentCode').focus();
+            }
+        }
+
+        // Verify parent code
+        function verifyParentCode() {
+            const enteredCode = document.getElementById('parentCode').value;
+            if (enteredCode === PARENT_CODE) {
+                isParentMode = true;
+                startApp();
+            } else {
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('parentCode').value = '';
+                document.getElementById('parentCode').focus();
+            }
+        }
+
+        // Back to user selection
+        function backToUserSelection() {
+            document.getElementById('userOptions').style.display = 'block';
+            document.getElementById('codeInputSection').style.display = 'none';
+        }
+
+        // Start the main app
+        function startApp() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            
+            // Show/hide parent mode elements
+            if (isParentMode) {
+                document.getElementById('parentModeIndicator').style.display = 'block';
+                document.getElementById('parentControlsSection').style.display = 'block';
+                document.body.classList.add('parent-mode');
+            } else {
+                document.getElementById('parentModeIndicator').style.display = 'none';
+                document.getElementById('parentControlsSection').style.display = 'none';
+                document.body.classList.remove('parent-mode');
+            }
+            
+            updateDateDisplay();
+            loadProgress();
+            renderChecklist();
+            updateProgress();
+            checkInstallPrompt();
+        }
+
+        // Logout function
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                isParentMode = false;
+                showLoginScreen();
+            }
+        }
+
+        // Get current day of week (0=Sunday, 1=Monday, etc.)
+        function getCurrentDay() {
+            return new Date().getDay();
+        }
+
+        // Update date display
+        function updateDateDisplay() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            const dayName = now.toLocaleDateString(undefined, { weekday: 'long' });
+            document.getElementById('dateDisplay').innerHTML = 
+                `${now.toLocaleDateString(undefined, options)}` +
+                (getCurrentDay() >= 5 ? '<span class="weekend-badge">WEEKEND</span>' : '');
+        }
+
+        // Load progress from localStorage
+        function loadProgress() {
+            const today = new Date().toDateString();
+            const savedData = JSON.parse(localStorage.getItem('shadiGamingData') || '{}');
+            
+            if (savedData.date === today) {
+                completedTasks = new Set(savedData.completed || []);
+                tournamentUsed = savedData.tournamentUsed || false;
+                parentApproved = savedData.parentApproved || false;
+            } else {
+                // New day, reset progress but keep weekly tournament status
+                completedTasks = new Set();
+                parentApproved = false;
+                
+                // Reset tournament on Monday (day 1)
+                if (getCurrentDay() === 1) {
+                    tournamentUsed = false;
+                } else if (savedData.tournamentUsed) {
+                    tournamentUsed = savedData.tournamentUsed;
+                }
+            }
+
+            // Load custom schedule if exists
+            const customSchedule = JSON.parse(localStorage.getItem('shadiCustomSchedule') || 'null');
+            if (customSchedule) {
+                // Merge custom schedule with default
+                customSchedule.tasks.forEach((customTask, index) => {
+                    if (weeklySchedule.tasks[index]) {
+                        weeklySchedule.tasks[index].title = customTask.title;
+                        weeklySchedule.tasks[index].required = customTask.required;
+                    }
+                });
+            }
+        }
+
+        // Save progress to localStorage
+        function saveProgress() {
+            const today = new Date().toDateString();
+            const data = {
+                date: today,
+                completed: Array.from(completedTasks),
+                tournamentUsed: tournamentUsed,
+                parentApproved: parentApproved
+            };
+            localStorage.setItem('shadiGamingData', JSON.stringify(data));
+        }
+
+        // Render checklist items
+        function renderChecklist() {
+            const container = document.getElementById('checklistContainer');
+            container.innerHTML = '';
+            const currentDay = getCurrentDay();
+
+            weeklySchedule.tasks.forEach(task => {
+                let isRequired = task.required[currentDay];
+                let isCompleted = completedTasks.has(task.id);
+                let specialNote = '';
+                let canClick = false;
+
+                // Special handling for bedtime task
+                if (task.id === 'bedtime') {
+                    if (currentDay === 1) { // Monday - check if bedtime was completed on Sunday
+                        isRequired = task.required[0]; // Sunday requirement
+                        isCompleted = wasBedtimeCompletedYesterday();
+                        specialNote = 'Based on last night (Sunday)';
+                        canClick = isParentMode; // Only parents can modify yesterday's bedtime
+                    } else if (currentDay >= 2) { // Tuesday onwards - check previous day
+                        const prevDay = currentDay - 1;
+                        isRequired = task.required[prevDay];
+                        isCompleted = wasBedtimeCompletedYesterday();
+                        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                        specialNote = `Based on last night (${dayNames[prevDay]})`;
+                        canClick = isParentMode; // Only parents can modify yesterday's bedtime
+                    } else {
+                        // Sunday - can be checked normally for Monday verification
+                        canClick = true;
+                    }
+                } else if (task.parentOnly) {
+                    // Parent-only tasks (like gaming compliance)
+                    canClick = isParentMode;
+                    if (task.id === 'gaming_compliance' && isRequired) {
+                        specialNote = 'Parent verification required - Gaming time compliance check';
+                    }
+                } else {
+                    // Regular tasks
+                    canClick = isParentMode || isRequired;
+                }
+                
+                const itemElement = document.createElement('div');
+                let itemClasses = `checklist-item ${isCompleted ? 'completed' : ''} ${!isRequired ? 'not-required' : ''}`;
+                
+                // Add special styling for parent-only tasks
+                if (task.parentOnly && isRequired) {
+                    itemClasses += ' parent-only-task';
+                }
+                
+                itemElement.className = itemClasses;
+                
+                if (canClick) {
+                    if (task.id === 'bedtime' && (currentDay === 1 || currentDay >= 2)) {
+                        // Special handler for yesterday's bedtime
+                        itemElement.onclick = () => toggleBedtimeYesterday();
+                    } else {
+                        // Normal task handler
+                        itemElement.onclick = () => toggleTask(task.id);
+                    }
+                }
+
+                let statusText = isRequired ? 'Required today' : 'Not required today';
+                if (task.id === 'bedtime' && specialNote) {
+                    statusText = isRequired ? `Required - ${specialNote}` : `Not required - ${specialNote}`;
+                } else if (task.parentOnly && specialNote) {
+                    statusText = isRequired ? specialNote : 'Not required today';
+                }
+
+                // Add clickability indicator
+                if (canClick && isParentMode) {
+                    statusText += ' (Click to toggle)';
+                } else if (canClick && !isParentMode) {
+                    statusText += ' (Click to mark)';
+                } else if (task.parentOnly && !isParentMode && isRequired) {
+                    statusText = 'Parent must verify - Cannot be checked by Shadi';
+                } else if (task.id === 'bedtime' && specialNote && !isParentMode) {
+                    statusText += ' (Parents can modify)';
+                }
+
+                itemElement.innerHTML = `
+                    <div class="item-header">
+                        <div class="item-title">
+                            ${task.title}
+                            ${task.parentOnly ? '<span class="parent-only-indicator">PARENT ONLY</span>' : ''}
+                        </div>
+                        ${(isRequired || isParentMode) && (canClick || isCompleted) ? '<div class="checkbox"></div>' : ''}
+                    </div>
+                    <div class="item-status">${statusText}</div>
+                    ${task.id === 'bedtime' && isRequired && specialNote && !isParentMode ? 
+                        '<div class="bedtime-note">⚠️ This reflects whether bedtime rules were followed last night</div>' : ''}
+                    ${task.id === 'bedtime' && isRequired && specialNote && isParentMode ? 
+                        '<div class="bedtime-note">🔧 Parent can modify: Click to toggle yesterday\'s bedtime completion</div>' : ''}
+                    ${task.id === 'gaming_compliance' && isRequired && !isParentMode ? 
+                        '<div class="compliance-note">⚠️ Parents will verify if gaming time was respected yesterday</div>' : ''}
+                    ${task.id === 'gaming_compliance' && isRequired && isParentMode ? 
+                        '<div class="compliance-note">🔧 Did Shadi stay within his gaming time limit yesterday? Click to verify.</div>' : ''}
+                `;
+
+                container.appendChild(itemElement);
+            });
+        }
+
+        // Toggle bedtime for yesterday (parent control)
+        function toggleBedtimeYesterday() {
+            const wasCompleted = wasBedtimeCompletedYesterday();
+            setBedtimeYesterday(!wasCompleted);
+            renderChecklist();
+            updateProgress();
+            
+            // Add haptic feedback
+            if ('vibrate' in navigator) {
+                navigator.vibrate(50);
+            }
+        }
+
+        // Toggle task completion
+        function toggleTask(taskId) {
+            if (completedTasks.has(taskId)) {
+                completedTasks.delete(taskId);
+            } else {
+                completedTasks.add(taskId);
+            }
+            
+            saveProgress();
+            renderChecklist();
+            updateProgress();
+            
+            // Add a small haptic feedback simulation
+            if ('vibrate' in navigator) {
+                navigator.vibrate(50);
+            }
+        }
+
+        // Update progress display
+        function updateProgress() {
+            const currentDay = getCurrentDay();
+            let requiredTasks = weeklySchedule.tasks.filter(task => {
+                if (task.id === 'bedtime') {
+                    // For bedtime, check based on the logic in renderChecklist
+                    if (currentDay === 1) return task.required[0]; // Monday checks Sunday
+                    if (currentDay >= 2) return task.required[currentDay - 1]; // Other days check previous day
+                    return task.required[currentDay]; // Sunday checks current day
+                }
+                return task.required[currentDay];
+            });
+
+            let completedRequiredTasks = requiredTasks.filter(task => {
+                if (task.id === 'bedtime' && (currentDay === 1 || currentDay >= 2)) {
+                    return wasBedtimeCompletedYesterday();
+                }
+                return completedTasks.has(task.id);
+            });
+            
+            const totalRequired = requiredTasks.length;
+            const completedCount = completedRequiredTasks.length;
+            const progressPercent = totalRequired > 0 ? (completedCount / totalRequired) * 100 : 0;
+            
+            // Check for gaming compliance failure (parent-only task not completed)
+            const complianceTask = requiredTasks.find(task => task.id === 'gaming_compliance');
+            const complianceFailed = complianceTask && !completedTasks.has('gaming_compliance');
+            
+            // Update progress bar
+            document.getElementById('progressFill').style.width = `${progressPercent}%`;
+            
+            // Get gaming time for today
+            const gamingHours = weeklySchedule.gamingTime[currentDay];
+            
+            // Update displays
+            const gamingTimeDisplay = document.getElementById('gamingTimeDisplay');
+            const gamingReward = document.getElementById('gamingReward');
+            const parentSection = document.getElementById('parentSection');
+            const tournamentOption = document.getElementById('tournamentOption');
+            
+            // Update tournament option visibility and status
+            const isTournamentDay = currentDay >= 1 && currentDay <= 4; // Monday to Thursday
+            if (isTournamentDay && !tournamentUsed && !isParentMode && !complianceFailed) {
+                tournamentOption.style.display = 'block';
+                tournamentOption.className = 'tournament-option';
+                tournamentOption.textContent = '🏆 Use Weekly Tournament Option (3 hours)';
+            } else if (isTournamentDay && tournamentUsed) {
+                tournamentOption.style.display = 'block';
+                tournamentOption.className = 'tournament-option used';
+                tournamentOption.textContent = '🏆 Tournament Option Used This Week';
+            } else {
+                tournamentOption.style.display = 'none';
+            }
+            
+            // Handle gaming compliance failure
+            if (complianceFailed) {
+                gamingTimeDisplay.textContent = `🚫 Gaming suspended - Time limit exceeded yesterday`;
+                gamingReward.textContent = `❌ NO GAMING TODAY - Parents verified time limit was exceeded yesterday`;
+                gamingReward.className = 'gaming-reward';
+                parentSection.style.display = 'none';
+            } else if (completedCount === totalRequired && totalRequired > 0) {
+                // All tasks completed - now need parent approval (unless in parent mode)
+                if (parentApproved || isParentMode) {
+                    gamingTimeDisplay.textContent = `✅ ${isParentMode ? 'All tasks complete' : 'Parent approved'}! ${gamingHours} hours of gaming unlocked!`;
+                    gamingReward.textContent = `🎮 GAMING ${isParentMode ? 'AVAILABLE' : 'APPROVED'}! ${gamingHours} hour${gamingHours !== 1 ? 's' : ''} unlocked`;
+                    gamingReward.className = 'gaming-reward unlocked';
+                    parentSection.style.display = isParentMode ? 'none' : 'none';
+                } else {
+                    gamingTimeDisplay.textContent = `🎉 All tasks complete! Awaiting parent approval...`;
+                    gamingReward.textContent = `⏳ TASKS COMPLETED - Pending parent approval for ${gamingHours} hour${gamingHours !== 1 ? 's' : ''}`;
+                    gamingReward.className = 'gaming-reward pending-approval';
+                    parentSection.style.display = 'block';
+                }
+            } else if (totalRequired === 0) {
+                // No tasks required today
+                gamingTimeDisplay.textContent = 'No tasks required today - enjoy your free time!';
+                gamingReward.textContent = '🎉 Free day - no tasks required!';
+                gamingReward.className = 'gaming-reward unlocked';
+                parentSection.style.display = 'none';
+            } else {
+                // Some tasks remaining
+                const remaining = totalRequired - completedCount;
+                const parentOnlyRemaining = requiredTasks.filter(task => 
+                    task.parentOnly && !completedTasks.has(task.id)
+                ).length;
+                
+                if (parentOnlyRemaining > 0) {
+                    gamingTimeDisplay.textContent = `${completedCount}/${totalRequired} tasks complete - ${remaining} remaining (${parentOnlyRemaining} need parent verification)`;
+                    gamingReward.textContent = `🔒 ${remaining} task${remaining !== 1 ? 's' : ''} remaining - ${parentOnlyRemaining} need parent verification`;
+                } else {
+                    gamingTimeDisplay.textContent = `${completedCount}/${totalRequired} tasks complete - ${remaining} remaining`;
+                    gamingReward.textContent = `🔒 Complete ${remaining} more task${remaining !== 1 ? 's' : ''} to unlock ${gamingHours} hour${gamingHours !== 1 ? 's' : ''} of gaming`;
+                }
+                
+                gamingReward.className = 'gaming-reward';
+                parentSection.style.display = 'none';
+                if (!isParentMode) parentApproved = false; // Reset parent approval if tasks become incomplete
+            }
+        }
+
+        // Parent control functions
+        function checkAllTasks() {
+            if (confirm('Check all required tasks for today?')) {
+                const currentDay = getCurrentDay();
+                weeklySchedule.tasks.forEach(task => {
+                    let isRequired = task.required[currentDay];
+                    
+                    // Handle bedtime task special logic
+                    if (task.id === 'bedtime') {
+                        if (currentDay === 1) {
+                            isRequired = task.required[0];
+                            if (isRequired) setBedtimeYesterday(true);
+                        } else if (currentDay >= 2) {
+                            isRequired = task.required[currentDay - 1];
+                            if (isRequired) setBedtimeYesterday(true);
+                        } else {
+                            // Sunday - normal logic
+                            if (isRequired) completedTasks.add(task.id);
+                        }
+                    } else if (isRequired) {
+                        // Regular tasks and parent-only tasks
+                        completedTasks.add(task.id);
+                    }
+                });
+                saveProgress();
+                renderChecklist();
+                updateProgress();
+            }
+        }
+
+        function uncheckAllTasks() {
+            if (confirm('Uncheck all tasks for today? This will also reset parent approval.')) {
+                completedTasks.clear();
+                parentApproved = false;
+                // Also clear yesterday's bedtime if applicable
+                const currentDay = getCurrentDay();
+                if (currentDay === 1 || currentDay >= 2) {
+                    completedTasks.delete('bedtime_yesterday');
+                }
+                saveProgress();
+                renderChecklist();
+                updateProgress();
+            }
+        }
+
+        // Open task editor modal
+        function openTaskEditor() {
+            editedSchedule = JSON.parse(JSON.stringify(weeklySchedule)); // Deep copy
+            renderTaskEditor();
+            document.getElementById('taskEditorModal').style.display = 'flex';
+        }
+
+        // Close task editor modal
+        function closeTaskEditor() {
+            editedSchedule = null;
+            document.getElementById('taskEditorModal').style.display = 'none';
+        }
+
+        // Render task editor
+        function renderTaskEditor() {
+            const container = document.getElementById('taskEditContainer');
+            container.innerHTML = '';
+            
+            editedSchedule.tasks.forEach((task, taskIndex) => {
+                const taskDiv = document.createElement('div');
+                taskDiv.className = 'task-edit-item';
+                
+                taskDiv.innerHTML = `
+                    <div class="task-edit-header">
+                        <div class="task-edit-title">Task ${taskIndex + 1}</div>
+                    </div>
+                    <input type="text" class="task-title-input" value="${task.title}" 
+                           onchange="updateTaskTitle(${taskIndex}, this.value)">
+                    <div class="day-labels">
+                        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                    </div>
+                    <div class="week-schedule">
+                        ${task.required.map((required, dayIndex) => 
+                            `<div class="day-toggle ${required ? 'active' : ''}" 
+                                  onclick="toggleTaskDay(${taskIndex}, ${dayIndex})">${required ? 'REQ' : 'OFF'}</div>`
+                        ).join('')}
+                    </div>
+                `;
+                
+                container.appendChild(taskDiv);
+            });
+        }
+
+        // Update task title in editor
+        function updateTaskTitle(taskIndex, newTitle) {
+            editedSchedule.tasks[taskIndex].title = newTitle;
+        }
+
+        // Toggle task requirement for a specific day
+        function toggleTaskDay(taskIndex, dayIndex) {
+            editedSchedule.tasks[taskIndex].required[dayIndex] = !editedSchedule.tasks[taskIndex].required[dayIndex];
+            renderTaskEditor(); // Re-render to update button states
+        }
+
+        // Save task edits
+        function saveTaskEdits() {
+            if (confirm('Save changes to tasks and schedule? This will update the requirements immediately.')) {
+                // Update the main schedule
+                weeklySchedule.tasks = editedSchedule.tasks;
+                
+                // Save to localStorage
+                localStorage.setItem('shadiCustomSchedule', JSON.stringify(editedSchedule));
+                
+                // Re-render the main app
+                renderChecklist();
+                updateProgress();
+                
+                closeTaskEditor();
+                
+                alert('Tasks and schedule updated successfully!');
+            }
+        }
+
+        // Parent approval function
+        function parentApproval(approved) {
+            if (approved) {
+                parentApproved = true;
+                saveProgress();
+                updateProgress();
+                
+                // Add celebration effect
+                if ('vibrate' in navigator) {
+                    navigator.vibrate([100, 50, 100, 50, 200]);
+                }
+            } else {
+                // Parent denied - could add feedback here
+                alert('Gaming time denied by parent. Please discuss any incomplete or incorrectly marked tasks.');
+                parentApproved = false;
+                saveProgress();
+                updateProgress();
+            }
+        }
+
+        // Use tournament option
+        function useTournament() {
+            const currentDay = getCurrentDay();
+            const isTournamentDay = currentDay >= 1 && currentDay <= 4;
+            
+            if (!isTournamentDay || tournamentUsed) return;
+            
+            if (confirm('Use your weekly tournament option? This gives you 3 hours of gaming time for today and can only be used once per week (Monday-Thursday).')) {
+                tournamentUsed = true;
+                saveProgress();
+                
+                // Override the gaming reward display
+                const gamingReward = document.getElementById('gamingReward');
+                const gamingTimeDisplay = document.getElementById('gamingTimeDisplay');
+                
+                gamingTimeDisplay.textContent = '🏆 Tournament option activated - 3 hours of gaming!';
+                gamingReward.textContent = '🎮 TOURNAMENT GAMING TIME! 3 hours unlocked';
+                gamingReward.className = 'gaming-reward unlocked';
+                
+                updateProgress(); // This will update the tournament button status
+            }
+        }
+
+        // Reset daily progress
+        function resetDaily() {
+            if (confirm('Are you sure you want to reset today\'s progress? This will also reset parent approval and cannot be undone.')) {
+                completedTasks.clear();
+                parentApproved = false;
+                // Also clear yesterday's bedtime if applicable
+                const currentDay = getCurrentDay();
+                if (currentDay === 1 || currentDay >= 2) {
+                    completedTasks.delete('bedtime_yesterday');
+                }
+                // Don't reset tournament status with daily reset
+                saveProgress();
+                renderChecklist();
+                updateProgress();
+            }
+        }
+
+        // Check if we should show install prompt
+        function checkInstallPrompt() {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            const isInStandaloneMode = window.navigator.standalone === true;
+            
+            if (isIOS && !isInStandaloneMode) {
+                document.getElementById('installPrompt').classList.add('show');
+            }
+        }
+
+        // Allow Enter key for parent code
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter' && document.getElementById('codeInputSection').style.display === 'block') {
+                verifyParentCode();
+            }
+        });
+
+        // Initialize app when page loads
+        document.addEventListener('DOMContentLoaded', init);
+        
+        // Handle app becoming active (for daily reset check)
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                const today = new Date().toDateString();
+                const savedData = JSON.parse(localStorage.getItem('shadiGamingData') || '{}');
+                
+                if (savedData.date && savedData.date !== today) {
+                    // New day detected
+                    completedTasks.clear();
+                    parentApproved = false;
+                    
+                    // Reset tournament on Monday
+                    if (getCurrentDay() === 1) {
+                        tournamentUsed = false;
+                    }
+                    
+                    updateDateDisplay();
+                    renderChecklist();
+                    updateProgress();
+                    saveProgress();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
